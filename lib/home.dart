@@ -1,6 +1,10 @@
+import 'package:doof_app/models/user.dart';
 import 'package:doof_app/services/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:doof_app/styles.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 
 class MyStatefulWidget extends StatefulWidget {
   const MyStatefulWidget({Key? key}) : super(key: key);
@@ -42,11 +46,13 @@ class MyCustomForm extends StatelessWidget {
 
 class MyProfile extends StatelessWidget {
   //MyProfile({super.key});
-
+  
   final AuthService _auth = AuthService();
-
+  //final myUser _myUser = myUser(uid: uid);
+  
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<myUser?>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
@@ -87,8 +93,10 @@ class MyProfile extends StatelessWidget {
               ),
             ),
             onPressed: () async {
-              await _auth.signOut();
+              //await _auth.signOut();
+              addToFirestore(uid: user!.uid);
               print('logging out');
+              
             },
             child: const Padding(
               padding: EdgeInsets.symmetric(vertical: 22.0),
@@ -98,6 +106,18 @@ class MyProfile extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future addToFirestore({required uid}) async {
+    final docUser = FirebaseFirestore.instance.collection('users').doc();
+    final json = {
+      'timestamp': DateTime.now(),
+      'uid': uid,
+      'how_much': 'a lot',
+      'what': "whatever"
+
+    };
+    await docUser.set(json);
   }
 
   Widget _buildRow(BuildContext context, String label, String value) {

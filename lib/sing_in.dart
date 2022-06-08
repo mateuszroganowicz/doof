@@ -97,6 +97,10 @@ class _SignInState extends State<SignIn> {
                         error = 'Could not log in using these credentials';
                       });
                     }
+                    else{
+                      print("loogged");
+                      print(result.uid);
+                    }
                     
                     
                   }
